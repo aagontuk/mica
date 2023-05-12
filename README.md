@@ -7,6 +7,7 @@ Updates:
 --------
 
 	* Added support for DPDK 20.11.2
+	* Support for both Intel and MLX5 PMD
 
 
 Hardware Requirements

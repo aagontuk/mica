@@ -21,6 +21,10 @@ endif(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
 
 project(MEHCACHED)
 
+FIND_PACKAGE(PkgConfig REQUIRED)
+
+PKG_CHECK_MODULES(LIBDPDK REQUIRED IMPORTED_TARGET libdpdk)
+
 add_subdirectory(perf_count)
 set(LIBRARY_PATH ${LIBRARY_PATH} perf_count/)
 
@@ -64,15 +68,42 @@ set(LIBRARIES ${LIBRARIES} rt crypto perf_count m pthread)
 #add_definitions(-fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free)
 #set(LIBRARIES ${LIBRARIES} tcmalloc_minimal)
 
+OPTION(DPDK "Enable Intel DPDK" ON)
+
 # DPDK
-set(RTE_SDK ${CMAKE_CURRENT_SOURCE_DIR}/../../DPDK)
-set(RTE_TARGET x86_64-default-linuxapp-gcc)
-add_definitions(-DUSE_DPDK)
-add_definitions(-isystem ${RTE_SDK}/${RTE_TARGET}/include -include rte_config.h)
-link_directories(${LINK_DIRECTORIES} ${RTE_SDK}/${RTE_TARGET}/lib)
-set(LIBRARIES ${LIBRARIES} rte_eal rte_mempool rte_ring)	# for basic features
-#set(LIBRARIES ${LIBRARIES} rte_ethdev rte_mbuf rte_pmd_ixgbe librte_pmd_ring.a)	# for network features
-set(LIBRARIES ${LIBRARIES} rte_ethdev rte_mbuf)	# for network features
+IF(DPDK)
+
+  MESSAGE(STATUS "DPDK support is enabled (to disable, run `cmake .. -DDPDK=OFF`)")
+  add_definitions(-DUSE_DPDK)
+
+  include_directories(${LIBDPDK_INCLUDE_DIRS})
+  link_directories(${LINK_DIRECTORIES} ${LIBDPDK_LIBRARY_DIRS})
+  
+  set(LIBRARIES ${LIBRARIES} -Wl,--whole-archive)
+  set(LIBRARIES ${LIBRARIES} rte_hash)
+  set(LIBRARIES ${LIBRARIES} -Wl,--start-group)
+  set(LIBRARIES ${LIBRARIES} rte_kvargs rte_mbuf rte_ethdev rte_mempool rte_mempool_ring rte_ring rte_net rte_pci rte_eal rte_bus_pci rte_telemetry)
+  
+  find_library(MLX5 rte_net_mlx5 HINTS /opt/mellanox/dpdk/lib/x86_64-linux-gnu)
+  
+  if (MLX5)
+    MESSAGE(STATUS "Using mlx5 driver")
+    set(LIBRARIES ${LIBRARIES} rte_common_mlx5 rte_net_mlx5 ibverbs mlx5 mnl dl)
+  else(MLX5)
+    MESSAGE(STATUS "Using Intel drivers")
+    set(LIBRARIES ${LIBRARIES} rte_net_i40e rte_net_ice rte_net_ixgbe rte_net_ring)
+  endif(MLX5)
+  
+  set(LIBRARIES ${LIBRARIES} -Wl,--end-group)
+  set(LIBRARIES ${LIBRARIES} -Wl,--no-whole-archive)
+  set(LIBRARIES ${LIBRARIES} rt)
+
+ELSE(DPDK)
+
+  MESSAGE(STATUS "Intel DPDK support is disabled (to enable, run `cmake .. -DDPDK=ON`)")
+
+ENDIF(DPDK)
+
 set(LIBRARIES ${LIBRARIES} pthread rt)	# to make sure symbols in pthread and rt are resolved
 
 if(NOT "${NLOCAL}" STREQUAL "yes")
