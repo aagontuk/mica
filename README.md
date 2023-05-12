@@ -3,6 +3,11 @@ MICA
 
 A fast in-memory key-value store.
 
+Updates:
+--------
+
+	* Added support for DPDK 20.11.2
+
 
 Hardware Requirements
 ---------------------
