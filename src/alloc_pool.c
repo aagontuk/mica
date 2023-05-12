@@ -17,6 +17,8 @@
 #include "alloc_pool.h"
 #include "table.h"
 #include "shm.h"
+#include "util.h"
+#include <stdio.h>
 #include <assert.h>
 
 MEHCACHED_BEGIN
