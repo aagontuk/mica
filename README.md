@@ -8,6 +8,8 @@ Updates:
 
 	* Added support for DPDK 20.11.2
 	* Support for both Intel and MLX5 PMD
+	* Compiles without any issue with DPDK 20.11.2
+	* TODO: Verify server and client is running correctly
 
 
 Hardware Requirements
@@ -49,8 +51,11 @@ Executables
 Compiling Executables
 ---------------------
 
+	* Install DPDK 20.11.2 system wide.
+	* Bind network interface to DPDK compatible driver. (Not required for Mellanox devices)
+	* Reserve hugepages: `sudo dpdk-hugepages.py -p 2M --setup 32G`
+	
 	$ cd mica/build
-	$ ../scripts/setup_dkdp_env.sh	# this uses sudo
 	$ ../configure_all.sh
 	$ make
 
