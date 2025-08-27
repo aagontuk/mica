@@ -25,7 +25,7 @@ function system_setup() {
 
   sudo apt update
   sudo apt install -y linux-tools-common linux-tools-`uname -r` htop
-  sudo apt install -y meson ninja-build pkg-config python3-pip libnuma-dev
+  sudo apt install -y meson ninja-build pkg-config python3-pip libnuma-dev libmnl-dev libssl-dev
   pip install pyelftools
 
   # Install plot packages
