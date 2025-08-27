@@ -9,7 +9,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DPDK_VERSION="20.11"
 
 function usage() {
-  echo "Usage: $0 {setup | install_dpdk | install_ofed | all}"
+  echo "Usage: $0 {setup | dpdk | ofed | build | all}"
   exit 1
 }
 
@@ -65,17 +65,25 @@ function install_dpdk() {
   sudo ldconfig
 }
 
+function build() {
+  cd ${SCRIPT_DIR}/../build
+  ../configure_all.sh
+}
+
 # Command line arguments
-if [ "$1" == "install_dpdk" ]; then
+if [ "$1" == "dpdk" ]; then
 	install_dpdk
-elif [ "$1" == "install_ofed" ]; then
+elif [ "$1" == "ofed" ]; then
 	install_ofed
 elif [ "$1" == "setup" ]; then
   system_setup
+elif [ "$1" == "build" ]; then
+  build 
 elif [ "$1" == "all" ]; then
-  system_setup
   install_ofed
+  system_setup
   install_dpdk
+  build
 else
   usage
   exit 1
