@@ -6,7 +6,18 @@ set -xeuo pipefail
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # DPDK version
-DPDK_VERSION="20.11.2"
+DPDK_VERSION="20.11"
+
+function usage() {
+  echo "Usage: $0 {setup | install_dpdk | install_ofed | all}"
+  exit 1
+}
+
+# If $1 is not set, print usage
+if [ -z "${1:-}" ]; then
+  usage
+  exit 1
+fi
 
 # Install general tools
 function system_setup() {
@@ -66,6 +77,6 @@ elif [ "$1" == "all" ]; then
   install_ofed
   install_dpdk
 else
-  echo "Usage: $0 {setup | install_dpdk | install_ofed | all}"
+  usage
   exit 1
 fi
