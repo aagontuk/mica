@@ -6,10 +6,10 @@ A fast in-memory key-value store.
 Updates:
 --------
 
-	* Added support for DPDK 20.11.2
-	* Support for both Intel and MLX5 PMD
-	* Compiles without any issue with DPDK 20.11.2
-	* TODO: Verify server and client is running correctly
+    * Added support for DPDK 20.11.2
+    * Support for both Intel and MLX5 PMD
+    * Compiles without any issue with DPDK 20.11.2
+    * TODO: Verify server and client is running correctly
 
 
 Hardware Requirements
@@ -24,12 +24,12 @@ Hardware Requirements
 Software Requrements
 --------------------
 
- * linux x86_64 >= 3.2.0
- * gcc >= 4.6.0
- * Python >= 2.7.0
- * Intel DPDK >= 1.5.0
- * bash >= 4.0.0
- * cmake >= 2.6.0
+ * linux x86_64 >= 5.15.0
+ * gcc >= 11.4.0
+ * Python >= 3.10.12
+ * Intel DPDK >= 20.11
+ * bash >= 5.1.16
+ * cmake >= 3.22.1
  * Hugepage (2 GiB) support
 
 
@@ -51,62 +51,63 @@ Executables
 Compiling Executables
 ---------------------
 
-	* Install DPDK 20.11.2 system wide.
-	* Bind network interface to DPDK compatible driver. (Not required for Mellanox devices)
-	* Reserve hugepages: `sudo dpdk-hugepages.py -p 2M --setup 32G`
-	
-	$ cd mica/build
-	$ ../configure_all.sh
-	$ make
+    * Install DPDK 20.11.2 system wide.
+    * Bind network interface to DPDK compatible driver. (Not required for Mellanox devices)
+    * Reserve hugepages: `sudo dpdk-hugepages.py -p 2M --setup 32G`
+    * Mount hugepage: `mkdir -p /mnt/huge; sudo mount -t hugetlbfs -o pagesize=2M,mode=1777 nodev /mnt/huge` 
+    
+    $ cd mica/build
+    $ ../configure_all.sh
+    $ make
 
 
 Generating Configuration Files
 ------------------------------
 
-	# conf_* files determine how MICA uses system resources. build/gen_confs.py generates a preset of configuration files for a 16-core server and 12-core clients
-	# in mica
-	$ ./run_analysis_for_conf.py	# this uses sudo
-	$ ./gen_confs.py
+    # conf_* files determine how MICA uses system resources. build/gen_confs.py generates a preset of configuration files for a 16-core server and 12-core clients
+    # in mica
+    $ ./run_analysis_for_conf.py    # this uses sudo
+    $ ./gen_confs.py
 
 
 Running a Server
 ----------------
 
-	# in mica/build
-	$ sudo ./netbench_server conf_machines_DATASET_CMODE_0.5 server 0 0 conf_prepopulation_empty
-	# DATASET=0,1,2 (used to determine how much memory to allocate); CMODE=EREW,CREW,CRCWS (specifies the data access mode)
+    # in mica/build
+    $ sudo ./netbench_server conf_machines_DATASET_CMODE_0.5 server 0 0 conf_prepopulation_empty
+    # DATASET=0,1,2 (used to determine how much memory to allocate); CMODE=EREW,CREW,CRCWS (specifies the data access mode)
 
 
 Running a Client (e.g., client0)
 --------------------------------
 
-	# in mica/build
-	$ sudo ./netbench_client conf_machines_DATASET_CMODE_0.5 client0 0 0 conf_workload_DATASET_SKEW_GET_PUT_0.00_1
-	# DATASET=0,1,2 (specifies the dataset to use); SKEW=uniform,skewed,single (specifies the workload skew); GET/PUT=0.00,0.50,0.95,1.00 (specifies the read/write ratio)
+    # in mica/build
+    $ sudo ./netbench_client conf_machines_DATASET_CMODE_0.5 client0 0 0 conf_workload_DATASET_SKEW_GET_PUT_0.00_1
+    # DATASET=0,1,2 (specifies the dataset to use); SKEW=uniform,skewed,single (specifies the workload skew); GET/PUT=0.00,0.50,0.95,1.00 (specifies the read/write ratio)
 
 
 Running a Local Microbenchmark
 ------------------------------
 
-	# in mica/build
-	$ sudo ./microbench CMODE SKEWNESS 0.5
-	# CMODE=EREW,CREW,CRCWS (specifies the data acces mode); SKEWNESS=0(uniform),0.99(skewed),99(single) (specifies the workload skew)
+    # in mica/build
+    $ sudo ./microbench CMODE SKEWNESS 0.5
+    # CMODE=EREW,CREW,CRCWS (specifies the data acces mode); SKEWNESS=0(uniform),0.99(skewed),99(single) (specifies the workload skew)
 
 
 License
 -------
 
-	Copyright 2014 Carnegie Mellon University
+    Copyright 2014 Carnegie Mellon University
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-	    http://www.apache.org/licenses/LICENSE-2.0
+        http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 
